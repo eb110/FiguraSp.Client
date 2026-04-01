@@ -1,13 +1,14 @@
 import "./App.css";
-import { Container, Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import NavBar from "./NavBar";
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
     <>
       <NavBar />
       <Container sx={{ marginTop: 10 }} maxWidth="xl">
-        <Typography variant="h4">APP BODY</Typography>
+        <Outlet />
       </Container>
     </>
   );
