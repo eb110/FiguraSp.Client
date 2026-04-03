@@ -1,5 +1,6 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, List, ListItem, Typography } from "@mui/material";
 import { useCreateSeasonMutation, useFetchSeasonsQuery } from "./seasonApi";
+import { Link } from "react-router-dom";
 
 export default function SeasonPage() {
   const { data, isLoading } = useFetchSeasonsQuery();
@@ -16,11 +17,22 @@ export default function SeasonPage() {
         alignItems: "center",
       }}
     >
-      <ul>
+      <List sx={{ display: "flex" }}>
         {data.map((season) => (
-          <li key={season.id}>{season.year}</li>
+          <ListItem key={season.id}>
+            <Typography sx={{ marginRight: 2 }} variant="h6">
+              {season.year}
+            </Typography>
+            <Button
+              component={Link}
+              to={`/seasons/${season.id}`}
+              variant="contained"
+            >
+              View
+            </Button>
+          </ListItem>
         ))}
-      </ul>
+      </List>
       <Button
         onClick={() => createSeason({ year: "1961" })}
         sx={{ maxWidth: "30%" }}
