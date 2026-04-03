@@ -1,6 +1,6 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { SeasonResponse } from "../../types/seasonResponse";
+import type { SeasonResponse } from "../../types/response/seasonResponse";
 
 export const seasonApi = createApi({
     reducerPath: 'seasonApi',

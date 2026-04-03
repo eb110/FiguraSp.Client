@@ -15,19 +15,32 @@ import { useState } from "react";
 import {
   useAddGamesByTeamsIdMutation,
   useFetchGameLevelsQuery,
+  useFetchSeasonGamesQuery,
 } from "../game/gameApi";
 import type { GamesByTeamsIdRequest } from "../../types/request/gamesByTeamIdRequest";
 import { useParams } from "react-router-dom";
+import GameList from "../game/GameList";
 
 export default function SeasonDetails() {
   const { id: seasonId } = useParams();
-  const { data, isLoading } = useFetchTeamsQuery();
-  const [addGamesByTeamsId] = useAddGamesByTeamsIdMutation();
+  const { data: teams, isLoading: teamsLoading } = useFetchTeamsQuery();
+  const [addGamesByTeamsId, { isLoading: addingGames }] =
+    useAddGamesByTeamsIdMutation();
   const { data: levels, isLoading: levelsLoading } = useFetchGameLevelsQuery();
+  const { data: games, isLoading: gamesLodaing } = useFetchSeasonGamesQuery(
+    seasonId ?? "",
+  );
   const [teamsToPair, setTeamsToPair] = useState<string[]>([]);
   const [level, setLevel] = useState("");
 
-  if (isLoading || !data || levelsLoading || !levels)
+  if (
+    teamsLoading ||
+    !teams ||
+    levelsLoading ||
+    !levels ||
+    gamesLodaing ||
+    !games
+  )
     return <div>Loading...</div>;
 
   const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,8 +62,9 @@ export default function SeasonDetails() {
       seasonId: seasonId,
       gameLevelId: levelId,
     } as GamesByTeamsIdRequest;
-
+    setLevel("");
     await addGamesByTeamsId(body);
+    setTeamsToPair([]);
   };
 
   return (
@@ -61,6 +75,8 @@ export default function SeasonDetails() {
         alignItems: "center",
       }}
     >
+      <GameList seasonId={seasonId ?? ""} teams={teams} levels={levels} />
+
       <Grid
         container
         marginLeft={3}
@@ -70,10 +86,16 @@ export default function SeasonDetails() {
           justifyContent: "center",
         }}
       >
-        {data.map((team) => (
+        {teams.map((team) => (
           <Grid size={2} display="flex" key={team.id}>
             <FormControlLabel
-              control={<Checkbox onChange={handleCheckbox} value={team.id} />}
+              control={
+                <Checkbox
+                  onChange={handleCheckbox}
+                  value={team.id}
+                  checked={teamsToPair.includes(team.id)}
+                />
+              }
               label={team.city}
             />
           </Grid>
@@ -95,7 +117,7 @@ export default function SeasonDetails() {
         sx={{ marginTop: 2 }}
         variant="contained"
         onClick={addGames}
-        disabled={level.length === 0 || teamsToPair.length < 2}
+        disabled={level.length === 0 || teamsToPair.length < 2 || addingGames}
       >
         Create Games
       </Button>
