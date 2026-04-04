@@ -83,7 +83,7 @@ export default function GameRiders({ side, riders, game }: Props) {
           </FormControl>
           <Autocomplete
             onChange={(
-              event: SyntheticEvent<Element, Event>,
+              _: SyntheticEvent<Element, Event>,
               newValue: string | null,
             ) => {
               setSelectRider(

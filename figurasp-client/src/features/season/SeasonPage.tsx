@@ -1,11 +1,30 @@
-import { Box, Button, List, ListItem, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  MenuItem,
+  Select,
+  Typography,
+  type SelectChangeEvent,
+} from "@mui/material";
 import { useCreateSeasonMutation, useFetchSeasonsQuery } from "./seasonApi";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+
+const seasonYears = [...Array(78).keys()].map((x) => "" + (x + 1948));
 
 export default function SeasonPage() {
   const { data, isLoading } = useFetchSeasonsQuery();
+  const [seasonYearToAdd, setSeasonYearToAdd] = useState<string>("1948");
   const [createSeason, { isLoading: seasonCreating }] =
     useCreateSeasonMutation();
+
+  const handleSeasonYears = (event: SelectChangeEvent) => {
+    setSeasonYearToAdd(event.target.value as string);
+  };
 
   if (isLoading || !data) return <div>Loading...</div>;
 
@@ -17,7 +36,7 @@ export default function SeasonPage() {
         alignItems: "center",
       }}
     >
-      <List sx={{ display: "flex" }}>
+      <List sx={{ display: "flex", flexDirection: "column" }}>
         {data.map((season) => (
           <ListItem key={season.id}>
             <Typography sx={{ marginRight: 2 }} variant="h6">
@@ -33,14 +52,30 @@ export default function SeasonPage() {
           </ListItem>
         ))}
       </List>
-      <Button
-        onClick={() => createSeason({ year: "1961" })}
-        sx={{ maxWidth: "30%" }}
-        variant="contained"
-        disabled={seasonCreating}
-      >
-        Add Season
-      </Button>
+      <Box display="flex" justifyContent="center">
+        <FormControl sx={{ width: "150px" }}>
+          <InputLabel>Nr</InputLabel>
+          <Select
+            value={seasonYearToAdd}
+            label="Year"
+            onChange={handleSeasonYears}
+          >
+            {seasonYears.map((year) => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          onClick={() => createSeason(seasonYearToAdd)}
+          sx={{ width: "150px" }}
+          variant="contained"
+          disabled={seasonCreating}
+        >
+          Add Season
+        </Button>
+      </Box>
     </Box>
   );
 }
