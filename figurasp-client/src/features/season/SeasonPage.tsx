@@ -25,7 +25,7 @@ export default function SeasonPage() {
             </Typography>
             <Button
               component={Link}
-              to={`/seasons/${season.id}`}
+              to={`/seasons/${season.id}/${season.year}`}
               variant="contained"
             >
               View

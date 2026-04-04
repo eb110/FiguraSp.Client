@@ -3,15 +3,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { teamApi } from "../../features/team/teamApi";
 import { seasonApi } from "../../features/season/seasonApi";
 import { gameApi } from "../../features/game/gameApi";
+import { riderApi } from "../../features/rider/riderApi";
 
 export const store = configureStore({
     reducer: {
         [teamApi.reducerPath]: teamApi.reducer,
         [seasonApi.reducerPath]: seasonApi.reducer,
         [gameApi.reducerPath]: gameApi.reducer,
+        [riderApi.reducerPath]: riderApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(teamApi.middleware).concat(seasonApi.middleware).concat(gameApi.middleware)
+        getDefaultMiddleware()
+            .concat(teamApi.middleware)
+            .concat(seasonApi.middleware)
+            .concat(gameApi.middleware).concat(riderApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>

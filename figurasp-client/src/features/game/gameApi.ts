@@ -17,6 +17,10 @@ export const gameApi = createApi({
             query: (seasonId) => ({ url: `seasonGames?seasonId=${seasonId}` }),
             providesTags: ['SeasonGames']
         }),
+        fetchGame: builder.query<GameResponse, string>({
+            query: (id) => ({ url: `?id=${id}` }),
+            providesTags: ['SeasonGames']
+        }),
         addGamesByTeamsId: builder.mutation<DefaultResponse, GamesByTeamsIdRequest>({
             query: (gamesRequest) => {
                 return {
@@ -32,4 +36,4 @@ export const gameApi = createApi({
     })
 })
 
-export const { useFetchGameLevelsQuery, useAddGamesByTeamsIdMutation, useFetchSeasonGamesQuery } = gameApi;
+export const { useFetchGameLevelsQuery, useAddGamesByTeamsIdMutation, useFetchSeasonGamesQuery, useFetchGameQuery } = gameApi;

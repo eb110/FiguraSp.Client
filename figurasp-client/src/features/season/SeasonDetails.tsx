@@ -22,7 +22,7 @@ import { useParams } from "react-router-dom";
 import GameList from "../game/GameList";
 
 export default function SeasonDetails() {
-  const { id: seasonId } = useParams();
+  const { id: seasonId, year: seasonYear } = useParams();
   const { data: teams, isLoading: teamsLoading } = useFetchTeamsQuery();
   const [addGamesByTeamsId, { isLoading: addingGames }] =
     useAddGamesByTeamsIdMutation();
@@ -61,6 +61,7 @@ export default function SeasonDetails() {
       teamIds: teamsToPair,
       seasonId: seasonId,
       gameLevelId: levelId,
+      gameDate: `${seasonYear}-01-01`,
     } as GamesByTeamsIdRequest;
     setLevel("");
     await addGamesByTeamsId(body);

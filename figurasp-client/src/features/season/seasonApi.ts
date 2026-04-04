@@ -14,8 +14,11 @@ export const seasonApi = createApi({
                 url: `season?year=${year}`,
                 method: 'POST'
             })
+        }),
+        fetchSeason: builder.query<SeasonResponse, string>({
+            query: (id) => ({ url: `season?id=${id}` })
         })
     })
 })
 
-export const { useFetchSeasonsQuery, useCreateSeasonMutation } = seasonApi;
+export const { useFetchSeasonsQuery, useCreateSeasonMutation, useFetchSeasonQuery } = seasonApi;

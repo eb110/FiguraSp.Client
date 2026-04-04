@@ -3,6 +3,7 @@ import type { GameLevelResponse } from "../../types/response/gameLevelResponse";
 import type { TeamResponse } from "../../types/response/teamResponse";
 import { useFetchSeasonGamesQuery } from "./gameApi";
 import type { GameResponse } from "../../types/response/gameResponse";
+import { Link } from "react-router-dom";
 
 type Props = {
   seasonId: string;
@@ -30,7 +31,13 @@ export default function GameList({ seasonId, teams, levels }: Props) {
           <ListItem>
             <ListItemText primary={handleGameDetails(game)} />
           </ListItem>
-          <Button variant="contained">Edit</Button>
+          <Button
+            component={Link}
+            to={`/games/${game.id}/${game.gameDate}`}
+            variant="contained"
+          >
+            Edit
+          </Button>
         </Box>
       ))}
     </List>

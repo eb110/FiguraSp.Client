@@ -7,6 +7,7 @@ import TeamPage from "../../features/team/TeamPage";
 import RiderDetails from "../../features/rider/RiderDetails";
 import TeamDetails from "../../features/team/TeamDetails";
 import SeasonDetails from "../../features/season/SeasonDetails";
+import GamePage from "../../features/game/GamePage";
 
 export const router = createBrowserRouter([
   {
@@ -15,11 +16,12 @@ export const router = createBrowserRouter([
     children: [
       { path: "", element: <HomePage /> },
       { path: "/seasons", element: <SeasonPage /> },
-      { path: "/seasons/:id", element: <SeasonDetails /> },
+      { path: "/seasons/:id/:year", element: <SeasonDetails /> },
       { path: "/riders", element: <RiderPage /> },
       { path: "/riders/:id", element: <RiderDetails /> },
       { path: "/teams", element: <TeamPage /> },
       { path: "/teams/:id", element: <TeamDetails /> },
+      { path: "/games/:id/:year", element: <GamePage /> },
     ],
   },
 ]);
