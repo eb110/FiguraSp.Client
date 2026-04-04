@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { TeamResponse } from "../../types/teamResponse";
+import type { TeamResponse } from "../../types/response/teamResponse";
 
 export const teamApi = createApi({
     reducerPath: 'teamApi',
@@ -7,8 +7,12 @@ export const teamApi = createApi({
     endpoints: (builder) => ({
         fetchTeams: builder.query<TeamResponse[], void>({
             query: () => ({ url: 'teams' })
+        }),
+        fetchTeam: builder.query<TeamResponse, string>({
+            query: (id) => ({ url: `?id=${id}` })
         })
-    })
+    }),
+
 })
 
-export const { useFetchTeamsQuery } = teamApi;
+export const { useFetchTeamsQuery, useFetchTeamQuery } = teamApi;
