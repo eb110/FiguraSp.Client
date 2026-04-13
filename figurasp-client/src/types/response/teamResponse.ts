@@ -1,4 +1,4 @@
-import type { DefaultResponse } from "../response/defaultResponse"
+import type { DefaultResponse } from "./defaultResponse"
 
 export interface TeamResponse extends DefaultResponse {
     id: string,
