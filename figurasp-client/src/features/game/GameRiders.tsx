@@ -21,6 +21,7 @@ import {
   useAddRiderEventsMutation,
   useFetchGameEventsQuery,
   useFetchGameRiderEventsQuery,
+  useRemoveGameRiderEventsMutation,
 } from "./gameApi";
 import type { RiderEventsRequest } from "../../types/request/newGameEventRequest";
 
@@ -52,6 +53,9 @@ export default function GameRiders({ side, riders, game }: Props) {
   );
   const [postRiderEvents, { isLoading: riderEventsPosting }] =
     useAddRiderEventsMutation();
+
+  const [deleteGameRiderEvents, { isLoading: deletingEvents }] =
+    useRemoveGameRiderEventsMutation();
   if (
     teamLoading ||
     !team ||
@@ -85,6 +89,14 @@ export default function GameRiders({ side, riders, game }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleResultChange = (event: any) => {
     if (event) setResult(event.target.value);
+  };
+
+  const handleDelete = async (gameId: string, riderId: string) => {
+    try {
+      await deleteGameRiderEvents({ gameId, riderId });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -149,6 +161,13 @@ export default function GameRiders({ side, riders, game }: Props) {
               <ListItemText
                 primary={`${event.riderGameNumber}.${event.name} ${event.surname}: ${event.result}`}
               />
+              <Button
+                onClick={() => handleDelete(event.gameId, event.riderId)}
+                variant="contained"
+                disabled={deletingEvents}
+              >
+                Delete
+              </Button>
             </ListItem>
           ))}
         </List>
