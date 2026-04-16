@@ -157,7 +157,7 @@ export default function GameRiders({ side, riders, game }: Props) {
       <Box>
         <List>
           {concatenatedRiderEvents.gameRiderEvents.map((event) => (
-            <ListItem key={event.riderId}>
+            <ListItem key={event.riderId} sx={{ height: "30px" }}>
               <ListItemText
                 primary={`${event.riderGameNumber}.${event.name} ${event.surname}: ${event.result}`}
               />
@@ -165,6 +165,7 @@ export default function GameRiders({ side, riders, game }: Props) {
                 onClick={() => handleDelete(event.gameId, event.riderId)}
                 variant="contained"
                 disabled={deletingEvents}
+                sx={{ height: "120%" }}
               >
                 Delete
               </Button>

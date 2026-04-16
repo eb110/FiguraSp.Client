@@ -15,6 +15,4 @@ export interface GameRiderEvent {
     result: string,
     heats: string,
     rows: string,
-    heatsCount: number,
-    points: number,
 }

@@ -1,6 +1,16 @@
 import { useParams } from "react-router-dom";
-import { useFetchGameQuery } from "./gameApi";
-import { Autocomplete, Box, Button, TextField } from "@mui/material";
+import {
+  useFetchGameEventsWithRidersQuery,
+  useFetchGameQuery,
+} from "./gameApi";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
 import {
   useAddRiderMutation,
   useFetchSeasonRidersQuery,
@@ -23,6 +33,8 @@ export default function GamePage() {
   const { data: game, isLoading: gameLoading } = useFetchGameQuery(
     gameId ?? "",
   );
+  const { data: eventWithRider, isLoading: eventWithRidersLoading } =
+    useFetchGameEventsWithRidersQuery(gameId ?? "");
   const { data: riders, isLoading: ridersLoadoing } = useFetchSeasonRidersQuery(
     gameDate ?? "",
   );
@@ -62,7 +74,9 @@ export default function GamePage() {
     firstNamesLoading ||
     !firstNames ||
     countriesLoading ||
-    !countries
+    !countries ||
+    eventWithRidersLoading ||
+    !eventWithRider
   )
     return <div>Loading...</div>;
 
@@ -72,6 +86,27 @@ export default function GamePage() {
         <GameRiders side="Home" riders={riders} game={game} />
         <GameRiders side="Away" riders={riders} game={game} />
       </Box>
+      <Grid
+        container
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {eventWithRider
+          .filter((x) => x.eventResponseDto.riderHeatNumber !== 99)
+          .map((riderEvent) => (
+            <Grid size={3} display="flex" key={riderEvent.eventResponseDto.id}>
+              <Typography variant="h6" paddingRight={2}>
+                {riderEvent.riderResponseDto.surname}
+              </Typography>
+              <Typography variant="h6">
+                {riderEvent.eventResponseDto.eventResult}
+              </Typography>
+            </Grid>
+          ))}
+      </Grid>
       <Box display="flex" flexDirection="row" marginTop={2}>
         <Autocomplete
           onChange={(

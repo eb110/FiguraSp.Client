@@ -7,6 +7,7 @@ import type { GameResponse } from "../../types/response/gameResponse";
 import type { RiderEventsRequest } from "../../types/request/newGameEventRequest";
 import type { EventResponse } from "../../types/response/eventResponse";
 import type { GameRiderEvents } from "../../types/response/gameRiderEvents";
+import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
 
 export const gameApi = createApi({
     reducerPath: 'gameApi',
@@ -19,6 +20,9 @@ export const gameApi = createApi({
         fetchSeasonGames: builder.query<GameResponse[], string>({
             query: (seasonId) => ({ url: `seasonGames?seasonId=${seasonId}` }),
             providesTags: ['SeasonGames']
+        }),
+        fetchGameEventsWithRiders: builder.query<EventWithRiderResponse[], string>({
+            query: (gameId) => ({ url: `gameEventsWithRider?gameId=${gameId}` }),
         }),
         //list of riders buit upon their events
         fetchGameEvents: builder.query<EventResponse[], { gameId: string, homeAway: string }>({
@@ -72,4 +76,4 @@ export const gameApi = createApi({
     })
 })
 
-export const { useFetchGameEventsQuery, useRemoveGameRiderEventsMutation, useFetchGameRiderEventsQuery, useFetchGameLevelsQuery, useAddGamesByTeamsIdMutation, useFetchSeasonGamesQuery, useFetchGameQuery, useAddRiderEventsMutation } = gameApi;
+export const { useFetchGameEventsQuery, useFetchGameEventsWithRidersQuery, useRemoveGameRiderEventsMutation, useFetchGameRiderEventsQuery, useFetchGameLevelsQuery, useAddGamesByTeamsIdMutation, useFetchSeasonGamesQuery, useFetchGameQuery, useAddRiderEventsMutation } = gameApi;
