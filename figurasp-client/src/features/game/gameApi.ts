@@ -34,6 +34,11 @@ export const gameApi = createApi({
             query: ({ gameId, homeAway }) => ({ url: `gameRiderEvents?gameId=${gameId}&homeAway=${homeAway}` }),
             providesTags: ['RidersEventsBased']
         }),
+        changeEvents: builder.mutation<DefaultResponse, { oldEventId: string, newEventId: string }>({
+            query: ({ oldEventId, newEventId }) => {
+                return { url: `changeEvents?oldEventId=${oldEventId}&newEventId=${newEventId}`, method: 'POST' }
+            }
+        }),
         removeGameRiderEvents: builder.mutation<void, { gameId: string, riderId: string }>({
             query: ({ gameId, riderId }) => {
                 return {
@@ -76,4 +81,6 @@ export const gameApi = createApi({
     })
 })
 
-export const { useFetchGameEventsQuery, useFetchGameEventsWithRidersQuery, useRemoveGameRiderEventsMutation, useFetchGameRiderEventsQuery, useFetchGameLevelsQuery, useAddGamesByTeamsIdMutation, useFetchSeasonGamesQuery, useFetchGameQuery, useAddRiderEventsMutation } = gameApi;
+export const { useFetchGameEventsQuery, useChangeEventsMutation, useFetchGameEventsWithRidersQuery,
+    useRemoveGameRiderEventsMutation, useFetchGameRiderEventsQuery, useFetchGameLevelsQuery, useAddGamesByTeamsIdMutation,
+    useFetchSeasonGamesQuery, useFetchGameQuery, useAddRiderEventsMutation } = gameApi;

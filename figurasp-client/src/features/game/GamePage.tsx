@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import {
+  useChangeEventsMutation,
   useFetchGameEventsWithRidersQuery,
   useFetchGameQuery,
 } from "./gameApi";
@@ -7,9 +8,14 @@ import {
   Autocomplete,
   Box,
   Button,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
   Typography,
+  type SelectChangeEvent,
 } from "@mui/material";
 import {
   useAddRiderMutation,
@@ -27,6 +33,7 @@ import {
   useFetchFirstNamesQuery,
 } from "../network/networkApi";
 import type { RiderRequest } from "../../types/request/newRiderRequest";
+import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
 
 export default function GamePage() {
   const { id: gameId, year: gameDate } = useParams();
@@ -43,6 +50,8 @@ export default function GamePage() {
   const { data: countries, isLoading: countriesLoading } =
     useFetchCountriesQuery();
   const [addNewRider, { isLoading: addingNewRider }] = useAddRiderMutation();
+  const [changeEvents, { isLoading: changingEvents }] =
+    useChangeEventsMutation();
 
   const [name, setName] = useState<string>("");
   const [surname, setSurname] = useState<string>("");
@@ -66,6 +75,16 @@ export default function GamePage() {
     await addNewRider(newRider);
   };
 
+  const handleRiderChange = async (
+    toto: EventWithRiderResponse,
+    event: SelectChangeEvent,
+  ) => {
+    await changeEvents({
+      oldEventId: toto.eventResponseDto.id,
+      newEventId: toto.eventChanges[+event.target.value].id,
+    });
+  };
+
   if (
     gameLoading ||
     !game ||
@@ -76,7 +95,8 @@ export default function GamePage() {
     countriesLoading ||
     !countries ||
     eventWithRidersLoading ||
-    !eventWithRider
+    !eventWithRider ||
+    changingEvents
   )
     return <div>Loading...</div>;
 
@@ -88,6 +108,7 @@ export default function GamePage() {
       </Box>
       <Grid
         container
+        border={1}
         sx={{
           display: "flex",
           alignItems: "center",
@@ -98,12 +119,42 @@ export default function GamePage() {
           .filter((x) => x.eventResponseDto.riderHeatNumber !== 99)
           .map((riderEvent) => (
             <Grid size={3} display="flex" key={riderEvent.eventResponseDto.id}>
-              <Typography variant="h6" paddingRight={2}>
-                {riderEvent.riderResponseDto.surname}
-              </Typography>
-              <Typography variant="h6">
-                {riderEvent.eventResponseDto.eventResult}
-              </Typography>
+              <Box
+                display="flex"
+                flexDirection="row"
+                border={1}
+                borderColor={"red"}
+                minWidth={"100%"}
+              >
+                <Typography
+                  textAlign={"center"}
+                  minWidth={"40%"}
+                  variant="h6"
+                  paddingRight={2}
+                >
+                  {riderEvent.riderResponseDto.surname}
+                </Typography>
+                <Typography minWidth={"15%"} variant="h6">
+                  {riderEvent.eventResponseDto.eventResult}
+                </Typography>
+                <FormControl sx={{ width: "45%" }}>
+                  <InputLabel>Change</InputLabel>
+                  <Select
+                    value={surname}
+                    label="Change"
+                    onChange={(e) =>
+                      handleRiderChange(riderEvent, e as SelectChangeEvent)
+                    }
+                  >
+                    {riderEvent.eventChanges.map((change, index) => (
+                      <MenuItem key={index} value={index}>
+                        {riderEvent.riderChanges[index].surname}{" "}
+                        {change.eventResult}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
             </Grid>
           ))}
       </Grid>

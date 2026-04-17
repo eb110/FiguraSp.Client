@@ -4,4 +4,6 @@ import type { RiderResponse } from "./riderResponse";
 export interface EventWithRiderResponse {
     riderResponseDto: RiderResponse
     eventResponseDto: EventResponse
+    eventChanges: EventResponse[]
+    riderChanges: RiderResponse[]
 }
