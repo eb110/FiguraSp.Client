@@ -1,22 +1,6 @@
 import { useParams } from "react-router-dom";
-import {
-  useChangeEventsMutation,
-  useFetchGameEventsWithRidersQuery,
-  useFetchGameQuery,
-} from "./gameApi";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-  type SelectChangeEvent,
-} from "@mui/material";
+import { useFetchGameQuery } from "./gameApi";
+import { Autocomplete, Box, Button, TextField } from "@mui/material";
 import {
   useAddRiderMutation,
   useFetchSeasonRidersQuery,
@@ -33,15 +17,13 @@ import {
   useFetchFirstNamesQuery,
 } from "../network/networkApi";
 import type { RiderRequest } from "../../types/request/newRiderRequest";
-import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
+import GameHeats from "./GameHeats";
 
 export default function GamePage() {
   const { id: gameId, year: gameDate } = useParams();
   const { data: game, isLoading: gameLoading } = useFetchGameQuery(
     gameId ?? "",
   );
-  const { data: eventWithRider, isLoading: eventWithRidersLoading } =
-    useFetchGameEventsWithRidersQuery(gameId ?? "");
   const { data: riders, isLoading: ridersLoadoing } = useFetchSeasonRidersQuery(
     gameDate ?? "",
   );
@@ -50,8 +32,6 @@ export default function GamePage() {
   const { data: countries, isLoading: countriesLoading } =
     useFetchCountriesQuery();
   const [addNewRider, { isLoading: addingNewRider }] = useAddRiderMutation();
-  const [changeEvents, { isLoading: changingEvents }] =
-    useChangeEventsMutation();
 
   const [name, setName] = useState<string>("");
   const [surname, setSurname] = useState<string>("");
@@ -75,16 +55,6 @@ export default function GamePage() {
     await addNewRider(newRider);
   };
 
-  const handleRiderChange = async (
-    toto: EventWithRiderResponse,
-    event: SelectChangeEvent,
-  ) => {
-    await changeEvents({
-      oldEventId: toto.eventResponseDto.id,
-      newEventId: toto.eventChanges[+event.target.value].id,
-    });
-  };
-
   if (
     gameLoading ||
     !game ||
@@ -93,10 +63,7 @@ export default function GamePage() {
     firstNamesLoading ||
     !firstNames ||
     countriesLoading ||
-    !countries ||
-    eventWithRidersLoading ||
-    !eventWithRider ||
-    changingEvents
+    !countries
   )
     return <div>Loading...</div>;
 
@@ -106,58 +73,7 @@ export default function GamePage() {
         <GameRiders side="Home" riders={riders} game={game} />
         <GameRiders side="Away" riders={riders} game={game} />
       </Box>
-      <Grid
-        container
-        border={1}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {eventWithRider
-          .filter((x) => x.eventResponseDto.riderHeatNumber !== 99)
-          .map((riderEvent) => (
-            <Grid size={3} display="flex" key={riderEvent.eventResponseDto.id}>
-              <Box
-                display="flex"
-                flexDirection="row"
-                border={1}
-                borderColor={"red"}
-                minWidth={"100%"}
-              >
-                <Typography
-                  textAlign={"center"}
-                  minWidth={"40%"}
-                  variant="h6"
-                  paddingRight={2}
-                >
-                  {riderEvent.riderResponseDto.surname}
-                </Typography>
-                <Typography minWidth={"15%"} variant="h6">
-                  {riderEvent.eventResponseDto.eventResult}
-                </Typography>
-                <FormControl sx={{ width: "45%" }}>
-                  <InputLabel>Change</InputLabel>
-                  <Select
-                    value={surname}
-                    label="Change"
-                    onChange={(e) =>
-                      handleRiderChange(riderEvent, e as SelectChangeEvent)
-                    }
-                  >
-                    {riderEvent.eventChanges.map((change, index) => (
-                      <MenuItem key={index} value={index}>
-                        {riderEvent.riderChanges[index].surname}{" "}
-                        {change.eventResult}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            </Grid>
-          ))}
-      </Grid>
+      {gameId && <GameHeats gameId={gameId} />}
       <Box display="flex" flexDirection="row" marginTop={2}>
         <Autocomplete
           onChange={(
