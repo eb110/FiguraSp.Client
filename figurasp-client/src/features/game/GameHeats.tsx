@@ -1,5 +1,8 @@
-import { Box, Typography } from "@mui/material";
-import { useFetchGameEventsWithRidersQuery } from "./gameApi";
+import { Box, Button, Typography } from "@mui/material";
+import {
+  useCalculateBonusesMutation,
+  useFetchGameEventsWithRidersQuery,
+} from "./gameApi";
 import GameRiderUpdateDisplay from "./GameRiderUpdateDisplay";
 import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
 import "./gameRiderUpdateDisplay.css";
@@ -12,7 +15,11 @@ export default function GameHeats({ gameId }: Props) {
   const { data: eventsWithRider, isLoading: eventsWithRidersLoading } =
     useFetchGameEventsWithRidersQuery(gameId ?? "");
 
-  if (eventsWithRidersLoading || !eventsWithRider) return <Box>Loading...</Box>;
+  const [calculateBonuses, { isLoading: calculatingBonuses }] =
+    useCalculateBonusesMutation();
+
+  if (eventsWithRidersLoading || !eventsWithRider || calculatingBonuses)
+    return <Box>Loading...</Box>;
 
   const chunkArray = (
     arr: EventWithRiderResponse[],
@@ -39,6 +46,10 @@ export default function GameHeats({ gameId }: Props) {
     return `${home}:${away}`;
   };
 
+  const bonusesCalculation = () => {
+    calculateBonuses(gameId);
+  };
+
   return (
     <Box>
       {chunkArray(
@@ -60,6 +71,11 @@ export default function GameHeats({ gameId }: Props) {
           </Typography>
         </Box>
       ))}
+      <Box textAlign={"center"} m={1}>
+        <Button onClick={bonusesCalculation} variant="contained">
+          Bonuses
+        </Button>
+      </Box>
     </Box>
   );
 }
