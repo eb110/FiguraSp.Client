@@ -75,6 +75,7 @@ export default function GameRiders({ side, riders, game }: Props) {
         gameRiderResult: result,
         homeAway: side,
       };
+      console.log(riderEvents);
       await postRiderEvents(riderEvents);
       setResult("");
       setStartingNumber("");

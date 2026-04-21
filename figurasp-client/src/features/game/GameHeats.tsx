@@ -2,6 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import {
   useCalculateBonusesMutation,
   useFetchGameEventsWithRidersQuery,
+  useResetEventsToDefaultMutation,
 } from "./gameApi";
 import GameRiderUpdateDisplay from "./GameRiderUpdateDisplay";
 import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
@@ -18,7 +19,15 @@ export default function GameHeats({ gameId }: Props) {
   const [calculateBonuses, { isLoading: calculatingBonuses }] =
     useCalculateBonusesMutation();
 
-  if (eventsWithRidersLoading || !eventsWithRider || calculatingBonuses)
+  const [resetEventsToDefault, { isLoading: resettingEvents }] =
+    useResetEventsToDefaultMutation();
+
+  if (
+    eventsWithRidersLoading ||
+    !eventsWithRider ||
+    calculatingBonuses ||
+    resettingEvents
+  )
     return <Box>Loading...</Box>;
 
   const chunkArray = (
@@ -35,19 +44,23 @@ export default function GameHeats({ gameId }: Props) {
   const calculateScore = (x: number) => {
     const eleToCount = eventsWithRider
       .slice(0, x * 4)
-      .filter((x) => "123".includes(x.eventResponseDto.eventResult));
+      .filter((x) => "123".includes(x.eventResponseDto.eventResult[0]));
     const home = eleToCount
       .filter((x) => x.eventResponseDto.homeAway === "Home")
-      .reduce((sum, x) => (sum += +x.eventResponseDto.eventResult), 0);
+      .reduce((sum, x) => (sum += +x.eventResponseDto.eventResult[0]), 0);
     const away = eleToCount
       .filter((x) => x.eventResponseDto.homeAway === "Away")
-      .reduce((sum, x) => (sum += +x.eventResponseDto.eventResult), 0);
+      .reduce((sum, x) => (sum += +x.eventResponseDto.eventResult[0]), 0);
 
     return `${home}:${away}`;
   };
 
   const bonusesCalculation = () => {
     calculateBonuses(gameId);
+  };
+
+  const eventsReset = () => {
+    resetEventsToDefault(gameId);
   };
 
   return (
@@ -72,8 +85,11 @@ export default function GameHeats({ gameId }: Props) {
         </Box>
       ))}
       <Box textAlign={"center"} m={1}>
-        <Button onClick={bonusesCalculation} variant="contained">
+        <Button sx={{ m: 1 }} onClick={bonusesCalculation} variant="contained">
           Bonuses
+        </Button>
+        <Button onClick={eventsReset} variant="contained">
+          Reset
         </Button>
       </Box>
     </Box>
