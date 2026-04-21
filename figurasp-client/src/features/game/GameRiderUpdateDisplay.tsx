@@ -38,7 +38,17 @@ export default function GameRiderUpdateDisplay({ riderEvent }: Props) {
       borderColor={"red"}
       width={"25%"}
     >
-      <Typography alignContent={"center"} minWidth={"50%"} paddingLeft={1}>
+      <Typography
+        alignContent={"center"}
+        minWidth={"50%"}
+        paddingLeft={1}
+        color={
+          riderEvent.eventResponseDto.changedFromRiderId ? "green" : "black"
+        }
+        fontWeight={
+          riderEvent.eventResponseDto.changedFromRiderId ? "bold" : "normal"
+        }
+      >
         {riderEvent.riderResponseDto.surname} <br />{" "}
         {riderEvent.riderResponseDto.name}
       </Typography>

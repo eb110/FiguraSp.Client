@@ -7,6 +7,8 @@ export interface EventResponse extends DefaultResponse {
     riderGameNumber: number,
     riderHeatNumber: number,
     riderRowNumber: number,
+    changedFromRiderId?: string,
+    changedToRiderId?: string,
     eventResult: string,
     homeAway: string
 }

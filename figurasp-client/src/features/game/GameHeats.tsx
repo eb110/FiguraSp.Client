@@ -66,7 +66,7 @@ export default function GameHeats({ gameId }: Props) {
   return (
     <Box>
       {chunkArray(
-        eventsWithRider.filter((x) => x.eventResponseDto.riderHeatNumber != 99),
+        eventsWithRider.filter((x) => x.eventResponseDto.riderHeatNumber < 99),
       ).map((heat, index) => (
         <Box display={"flex"}>
           {heat.map((riderEvent) => (
