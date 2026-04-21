@@ -19,7 +19,6 @@ import { useState, type SyntheticEvent } from "react";
 import { useFetchTeamQuery } from "../team/teamApi";
 import {
   useAddRiderEventsMutation,
-  useFetchGameEventsQuery,
   useFetchGameRiderEventsQuery,
   useRemoveGameRiderEventsMutation,
 } from "./gameApi";
@@ -41,10 +40,7 @@ export default function GameRiders({ side, riders, game }: Props) {
     gameId: game.id,
     homeAway: side,
   });
-  const { data: events, isLoading: eventsLoading } = useFetchGameEventsQuery({
-    gameId: game.id,
-    homeAway: side,
-  });
+
   const [selectRider, setSelectRider] = useState<RiderResponse | null>(null);
   const [startingNumber, setStartingNumber] = useState<string>("");
   const [result, setResult] = useState<string>("");
@@ -59,8 +55,6 @@ export default function GameRiders({ side, riders, game }: Props) {
   if (
     teamLoading ||
     !team ||
-    eventsLoading ||
-    !events ||
     concatenatedRiderEventsLoading ||
     !concatenatedRiderEvents
   )
@@ -110,11 +104,19 @@ export default function GameRiders({ side, riders, game }: Props) {
             label="Nr"
             onChange={handleStartingNumber}
           >
-            {startingNumbers.map((nr) => (
-              <MenuItem key={nr} value={nr}>
-                {nr}
-              </MenuItem>
-            ))}
+            {startingNumbers
+              .filter((x) => (side === "Home" ? x > 8 : x < 9))
+              .filter(
+                (x) =>
+                  !concatenatedRiderEvents.gameRiderEvents.some(
+                    (event) => event.riderGameNumber === x,
+                  ),
+              )
+              .map((nr) => (
+                <MenuItem key={nr} value={nr}>
+                  {nr}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
         <Autocomplete
@@ -160,7 +162,11 @@ export default function GameRiders({ side, riders, game }: Props) {
           {concatenatedRiderEvents.gameRiderEvents.map((event) => (
             <ListItem key={event.riderId} sx={{ height: "30px" }}>
               <ListItemText
+                sx={{ width: "60%" }}
                 primary={`${event.riderGameNumber}.${event.name} ${event.surname}: ${event.result}`}
+              />
+              <ListItemText
+                primary={`Age: ${+game.gameDate.substring(0, 4) - +event.doB.substring(0, 4)}`}
               />
               <Button
                 onClick={() => handleDelete(event.gameId, event.riderId)}

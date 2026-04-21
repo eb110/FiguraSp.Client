@@ -80,7 +80,7 @@ export default function GameHeats({ gameId }: Props) {
             paddingLeft={0.5}
             paddingRight={0.5}
           >
-            {calculateScore(index + 1)}
+            Heat: {index + 1} <br /> {calculateScore(index + 1)}
           </Typography>
         </Box>
       ))}

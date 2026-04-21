@@ -39,7 +39,8 @@ export default function GameRiderUpdateDisplay({ riderEvent }: Props) {
       width={"25%"}
     >
       <Typography alignContent={"center"} minWidth={"50%"} paddingLeft={1}>
-        {riderEvent.riderResponseDto.surname}
+        {riderEvent.riderResponseDto.surname} <br />{" "}
+        {riderEvent.riderResponseDto.name}
       </Typography>
       <Typography
         paddingRight={2}

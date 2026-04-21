@@ -95,7 +95,7 @@ export const gameApi = createApi({
                 }
             },
             onQueryStarted: (_, { dispatch }) => {
-                dispatch(gameApi.util.invalidateTags(['RidersEventsBased', 'RiderEvents']))
+                dispatch(gameApi.util.invalidateTags(['RidersEventsBased', 'RiderEvents', 'EventsWithRider']))
             }
         }),
     })
