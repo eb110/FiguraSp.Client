@@ -1,6 +1,7 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { GameLevelResponse } from "../../types/response/gameLevelResponse";
+import type { GameStageResponse } from "../../types/response/gameStageResponse";
 import type { DefaultResponse } from "../../types/response/defaultResponse";
 import type { GamesByTeamsIdRequest } from "../../types/request/gamesByTeamIdRequest";
 import type { GameResponse } from "../../types/response/gameResponse";
@@ -8,6 +9,7 @@ import type { RiderEventsRequest } from "../../types/request/newGameEventRequest
 import type { EventResponse } from "../../types/response/eventResponse";
 import type { GameRiderEvents } from "../../types/response/gameRiderEvents";
 import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
+import type { GamesEditRequestDto } from "../../types/request/gameEditRequestDto";
 
 export const gameApi = createApi({
     reducerPath: 'gameApi',
@@ -16,6 +18,9 @@ export const gameApi = createApi({
     endpoints: (builder) => ({
         fetchGameLevels: builder.query<GameLevelResponse[], void>({
             query: () => ({ url: 'levels' })
+        }),
+        fetchGameStages: builder.query<GameStageResponse[], void>({
+            query: () => ({ url: 'stages' })
         }),
         fetchSeasonGames: builder.query<GameResponse[], string>({
             query: (seasonId) => ({ url: `seasonGames?seasonId=${seasonId}` }),
@@ -86,6 +91,18 @@ export const gameApi = createApi({
                 dispatch(gameApi.util.invalidateTags(['SeasonGames']))
             }
         }),
+        editGame: builder.mutation<DefaultResponse, GamesEditRequestDto>({
+            query: (gameEditRequest) => {
+                return {
+                    url: 'editGame',
+                    method: 'POST',
+                    body: gameEditRequest
+                }
+            },
+            onQueryStarted: (_, { dispatch }) => {
+                dispatch(gameApi.util.invalidateTags(['SeasonGames']))
+            }
+        }),
         addRiderEvents: builder.mutation<number, RiderEventsRequest>({
             query: (riderEventsRequest) => {
                 return {
@@ -101,6 +118,7 @@ export const gameApi = createApi({
     })
 })
 
-export const { useFetchGameEventsQuery, useChangeEventsMutation, useFetchGameEventsWithRidersQuery,
+export const { useFetchGameEventsQuery, useChangeEventsMutation, useFetchGameEventsWithRidersQuery, useFetchGameStagesQuery,
     useRemoveGameRiderEventsMutation, useFetchGameRiderEventsQuery, useFetchGameLevelsQuery, useAddGamesByTeamsIdMutation,
-    useFetchSeasonGamesQuery, useFetchGameQuery, useAddRiderEventsMutation, useCalculateBonusesMutation, useResetEventsToDefaultMutation } = gameApi;
+    useFetchSeasonGamesQuery, useFetchGameQuery, useAddRiderEventsMutation, useCalculateBonusesMutation,
+    useResetEventsToDefaultMutation, useEditGameMutation } = gameApi;

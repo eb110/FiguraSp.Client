@@ -1,9 +1,8 @@
-import { Box, Button, List, ListItem, ListItemText } from "@mui/material";
+import { Box } from "@mui/material";
 import type { GameLevelResponse } from "../../types/response/gameLevelResponse";
 import type { TeamResponse } from "../../types/response/teamResponse";
-import { useFetchSeasonGamesQuery } from "./gameApi";
-import type { GameResponse } from "../../types/response/gameResponse";
-import { Link } from "react-router-dom";
+import { useFetchGameStagesQuery, useFetchSeasonGamesQuery } from "./gameApi";
+import GameEditDetails from "./GameEditDetails";
 
 type Props = {
   seasonId: string;
@@ -15,31 +14,22 @@ export default function GameList({ seasonId, teams, levels }: Props) {
   const { data: games, isLoading: gamesLodaing } =
     useFetchSeasonGamesQuery(seasonId);
 
-  if (gamesLodaing || !games) return <div>Loading...</div>;
+  const { data: stages, isLoading: stagesLoading } = useFetchGameStagesQuery();
 
-  const handleGameDetails = (game: GameResponse) => {
-    const teamHome = teams.filter((x) => x.id === game.teamHomeId)[0];
-    const teamAway = teams.filter((x) => x.id === game.teamAwayId)[0];
-    const level = levels.filter((x) => x.id === game.levelId)[0];
-    return `${teamHome.city} - ${teamAway.city} : ${level.gameLevel}`;
-  };
+  if (gamesLodaing || !games || stagesLoading || !stages)
+    return <div>Loading...</div>;
 
   return (
-    <List>
+    <Box width={"100%"}>
       {games.map((game) => (
-        <Box key={game.id} display="flex" maxHeight="20px" m={1}>
-          <ListItem>
-            <ListItemText primary={handleGameDetails(game)} />
-          </ListItem>
-          <Button
-            component={Link}
-            to={`/games/${game.id}/${game.gameDate}`}
-            variant="contained"
-          >
-            Edit
-          </Button>
-        </Box>
+        <GameEditDetails
+          key={game.id}
+          game={game}
+          teams={teams}
+          levels={levels}
+          stages={stages}
+        />
       ))}
-    </List>
+    </Box>
   );
 }

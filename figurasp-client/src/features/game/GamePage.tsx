@@ -41,7 +41,6 @@ export default function GamePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSurnameChange = (event: any) => {
     if (event) setSurname(event.target.value);
-    console.log();
   };
 
   const addRider = async () => {

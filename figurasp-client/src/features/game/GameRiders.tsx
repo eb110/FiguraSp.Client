@@ -58,7 +58,7 @@ export default function GameRiders({ side, riders, game }: Props) {
     concatenatedRiderEventsLoading ||
     !concatenatedRiderEvents
   )
-    return <div>Loading...</div>;
+    return <Box>Loading...</Box>;
 
   const addRiderEvents = async () => {
     if (selectRider) {
@@ -69,7 +69,6 @@ export default function GameRiders({ side, riders, game }: Props) {
         gameRiderResult: result,
         homeAway: side,
       };
-      console.log(riderEvents);
       await postRiderEvents(riderEvents);
       setResult("");
       setStartingNumber("");
@@ -141,7 +140,6 @@ export default function GameRiders({ side, riders, game }: Props) {
           onChange={handleResultChange}
         />
         <Button
-          //onClick={addRiderToGameList}
           onClick={addRiderEvents}
           variant="contained"
           disabled={

@@ -27,6 +27,7 @@ export default function SeasonDetails() {
   const [addGamesByTeamsId, { isLoading: addingGames }] =
     useAddGamesByTeamsIdMutation();
   const { data: levels, isLoading: levelsLoading } = useFetchGameLevelsQuery();
+
   const { data: games, isLoading: gamesLodaing } = useFetchSeasonGamesQuery(
     seasonId ?? "",
   );

@@ -6,6 +6,9 @@ export interface GameResponse extends DefaultResponse {
     teamAwayId: string,
     seasonId: string,
     levelId: string,
+    stageId?: string,
     inserted: boolean,
-    gameDate: string
+    gameDate: string,
+    homeScore: number,
+    awayScore: number
 }
