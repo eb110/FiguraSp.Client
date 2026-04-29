@@ -22,6 +22,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { useEditGameMutation } from "./gameApi";
 import type { GamesEditRequestDto } from "../../types/request/gameEditRequestDto";
+import { convertBstToIsoDate } from "../../tools/utils";
 
 type Props = {
   game: GameResponse;
@@ -61,7 +62,7 @@ export default function GameEditDetails({
     const updatedGame: GamesEditRequestDto = {
       id: game.id,
       stageId: stages.filter((x) => x.gameStage === stage)[0].id!,
-      gameDate: dob!.toISOString().substring(0, 10),
+      gameDate: convertBstToIsoDate(dob!),
       homeScore,
       awayScore,
     };
@@ -120,6 +121,7 @@ export default function GameEditDetails({
               sx={{ paddingTop: 0, margin: 0 }}
             >
               <DatePicker
+                //have to add one hour due to bst / utc difference
                 value={dob}
                 onChange={(newValue) => setDob(newValue)}
               />

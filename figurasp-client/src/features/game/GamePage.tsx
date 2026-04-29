@@ -18,6 +18,7 @@ import {
 } from "../network/networkApi";
 import type { RiderRequest } from "../../types/request/newRiderRequest";
 import GameHeats from "./GameHeats";
+import { convertBstToIsoDate } from "../../tools/utils";
 
 export default function GamePage() {
   const { id: gameId, year: gameDate } = useParams();
@@ -48,7 +49,7 @@ export default function GamePage() {
       name: name,
       surname: surname,
       nationality: nationality,
-      doB: dob!.toISOString().substring(0, 10),
+      doB: convertBstToIsoDate(dob!),
       pictureUrl: "",
     };
     await addNewRider(newRider);
@@ -111,7 +112,11 @@ export default function GamePage() {
             components={["DatePicker"]}
             sx={{ paddingTop: 0, margin: 0 }}
           >
-            <DatePicker value={dob} onChange={(newValue) => setDob(newValue)} />
+            <DatePicker
+              //have to add one hour due to bst / utc difference
+              value={dob}
+              onChange={(newValue) => setDob(newValue)}
+            />
           </DemoContainer>
         </LocalizationProvider>
       </Box>
