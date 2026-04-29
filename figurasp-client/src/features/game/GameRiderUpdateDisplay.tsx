@@ -31,13 +31,7 @@ export default function GameRiderUpdateDisplay({ riderEvent }: Props) {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      border={1}
-      borderColor={"red"}
-      width={"25%"}
-    >
+    <Box display="flex" flexDirection="row" borderColor={"red"} width={"25%"}>
       <Typography
         alignContent={"center"}
         minWidth={"50%"}

@@ -9,6 +9,7 @@ import GameRiderUpdateDisplay from "./GameRiderUpdateDisplay";
 import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
 import "./gameRiderUpdateDisplay.css";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 type Props = {
   gameId: string;
@@ -28,15 +29,6 @@ export default function GameHeats({ gameId }: Props) {
 
   const [gameSave, { isLoading: savingGame }] = useSaveGameMutation();
 
-  if (
-    eventsWithRidersLoading ||
-    !eventsWithRider ||
-    calculatingBonuses ||
-    resettingEvents ||
-    savingGame
-  )
-    return <Box>Loading...</Box>;
-
   const chunkArray = (
     arr: EventWithRiderResponse[],
   ): EventWithRiderResponse[][] => {
@@ -47,6 +39,30 @@ export default function GameHeats({ gameId }: Props) {
     }
     return res;
   };
+
+  const [heats, setHeats] = useState<EventWithRiderResponse[][]>([]);
+
+  useEffect(() => {
+    if (eventsWithRider) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHeats(
+        chunkArray(
+          eventsWithRider.filter(
+            (x) => x.eventResponseDto.riderHeatNumber < 99,
+          ),
+        ),
+      );
+    }
+  }, [eventsWithRider]);
+
+  if (
+    eventsWithRidersLoading ||
+    !eventsWithRider ||
+    calculatingBonuses ||
+    resettingEvents ||
+    savingGame
+  )
+    return <Box>Loading...</Box>;
 
   const calculateScore = (x: number) => {
     const eleToCount = eventsWithRider
@@ -75,20 +91,33 @@ export default function GameHeats({ gameId }: Props) {
     if (result.data?.success) navigate(`/seasons`);
   };
 
+  const validateHeats = (): boolean => {
+    if (heats.length !== 13) return false;
+    if (heats.every(validateHeat)) return true;
+    return false;
+  };
+
+  const validateHeat = (heat: EventWithRiderResponse[]): boolean => {
+    return heat.every((x) => x.eventResponseDto.eventResult !== "-");
+  };
+
   return (
     <Box>
-      {chunkArray(
-        eventsWithRider.filter((x) => x.eventResponseDto.riderHeatNumber < 99),
-      ).map((heat, index) => (
-        <Box display={"flex"}>
-          {heat.map((riderEvent, index) => (
-            <GameRiderUpdateDisplay riderEvent={riderEvent} key={index} />
+      {heats.map((heat, index) => (
+        <Box
+          display={"flex"}
+          border={validateHeat(heat) ? 1 : 2}
+          m={1}
+          key={index}
+          borderColor={validateHeat(heat) ? "black" : "red"}
+        >
+          {heat.map((riderEvent, cindex) => (
+            <GameRiderUpdateDisplay riderEvent={riderEvent} key={cindex} />
           ))}
           <Typography
             minWidth={"5%"}
             alignContent={"center"}
             textAlign={"center"}
-            border={1}
             paddingLeft={0.5}
             paddingRight={0.5}
           >
@@ -97,13 +126,23 @@ export default function GameHeats({ gameId }: Props) {
         </Box>
       ))}
       <Box textAlign={"center"} m={1}>
-        <Button sx={{ m: 1 }} onClick={bonusesCalculation} variant="contained">
+        <Button
+          sx={{ m: 1 }}
+          onClick={bonusesCalculation}
+          variant="contained"
+          disabled={!validateHeats()}
+        >
           Bonuses
         </Button>
         <Button onClick={eventsReset} variant="contained">
           Reset
         </Button>
-        <Button sx={{ m: 1 }} onClick={saveGame} variant="contained">
+        <Button
+          sx={{ m: 1 }}
+          onClick={saveGame}
+          variant="contained"
+          disabled={!validateHeats()}
+        >
           Save
         </Button>
       </Box>
