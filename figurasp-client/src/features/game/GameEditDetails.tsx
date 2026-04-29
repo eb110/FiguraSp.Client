@@ -83,10 +83,10 @@ export default function GameEditDetails({
       {game.stageId && (
         <Button
           component={Link}
-          to={`/games/${game.id}/${game.gameDate}`}
+          to={game.inserted ? `/seasons` : `/games/${game.id}/${game.gameDate}`}
           variant="contained"
         >
-          Edit
+          {game.inserted ? "View" : "Edit"}
         </Button>
       )}
       {!game.stageId && (

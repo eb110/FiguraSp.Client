@@ -3,16 +3,20 @@ import {
   useCalculateBonusesMutation,
   useFetchGameEventsWithRidersQuery,
   useResetEventsToDefaultMutation,
+  useSaveGameMutation,
 } from "./gameApi";
 import GameRiderUpdateDisplay from "./GameRiderUpdateDisplay";
 import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
 import "./gameRiderUpdateDisplay.css";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   gameId: string;
 };
 
 export default function GameHeats({ gameId }: Props) {
+  const navigate = useNavigate();
+
   const { data: eventsWithRider, isLoading: eventsWithRidersLoading } =
     useFetchGameEventsWithRidersQuery(gameId ?? "");
 
@@ -22,11 +26,14 @@ export default function GameHeats({ gameId }: Props) {
   const [resetEventsToDefault, { isLoading: resettingEvents }] =
     useResetEventsToDefaultMutation();
 
+  const [gameSave, { isLoading: savingGame }] = useSaveGameMutation();
+
   if (
     eventsWithRidersLoading ||
     !eventsWithRider ||
     calculatingBonuses ||
-    resettingEvents
+    resettingEvents ||
+    savingGame
   )
     return <Box>Loading...</Box>;
 
@@ -55,12 +62,17 @@ export default function GameHeats({ gameId }: Props) {
     return `${home}:${away}`;
   };
 
-  const bonusesCalculation = () => {
-    calculateBonuses(gameId);
+  const bonusesCalculation = async () => {
+    await calculateBonuses(gameId);
   };
 
-  const eventsReset = () => {
-    resetEventsToDefault(gameId);
+  const eventsReset = async () => {
+    await resetEventsToDefault(gameId);
+  };
+
+  const saveGame = async () => {
+    const result = await gameSave(gameId);
+    if (result.data?.success) navigate(`/seasons`);
   };
 
   return (
@@ -69,8 +81,8 @@ export default function GameHeats({ gameId }: Props) {
         eventsWithRider.filter((x) => x.eventResponseDto.riderHeatNumber < 99),
       ).map((heat, index) => (
         <Box display={"flex"}>
-          {heat.map((riderEvent) => (
-            <GameRiderUpdateDisplay riderEvent={riderEvent} />
+          {heat.map((riderEvent, index) => (
+            <GameRiderUpdateDisplay riderEvent={riderEvent} key={index} />
           ))}
           <Typography
             minWidth={"5%"}
@@ -90,6 +102,9 @@ export default function GameHeats({ gameId }: Props) {
         </Button>
         <Button onClick={eventsReset} variant="contained">
           Reset
+        </Button>
+        <Button sx={{ m: 1 }} onClick={saveGame} variant="contained">
+          Save
         </Button>
       </Box>
     </Box>

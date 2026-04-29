@@ -127,6 +127,13 @@ export default function GameRiders({ side, riders, game }: Props) {
               riders.filter((x) => `${x.surname} ${x.name}` === newValue)[0],
             );
           }}
+          value={
+            selectRider == null
+              ? ""
+              : selectRider!.surname
+                ? `${selectRider!.surname} ${selectRider!.name}`
+                : null
+          }
           options={riders.map((x) => `${x.surname} ${x.name}`)}
           sx={{ flexGrow: 1 }}
           renderInput={(params) => <TextField {...params} label="Riders" />}
@@ -153,7 +160,8 @@ export default function GameRiders({ side, riders, game }: Props) {
         </Button>
       </Box>
       <Typography textAlign="center" m={1}>
-        {side}: {team.name} {team.city}
+        {side}: {team.name} {team.city}{" "}
+        {side === "Home" ? game.homeScore : game.awayScore}
       </Typography>
       <Box>
         <List>

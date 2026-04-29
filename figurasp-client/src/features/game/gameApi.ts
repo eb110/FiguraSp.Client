@@ -1,4 +1,3 @@
-import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { GameLevelResponse } from "../../types/response/gameLevelResponse";
 import type { GameStageResponse } from "../../types/response/gameStageResponse";
@@ -10,39 +9,40 @@ import type { EventResponse } from "../../types/response/eventResponse";
 import type { GameRiderEvents } from "../../types/response/gameRiderEvents";
 import type { EventWithRiderResponse } from "../../types/response/eventsWithRidersResponse";
 import type { GamesEditRequestDto } from "../../types/request/gameEditRequestDto";
+import { baseQueryWithErrorHandling } from "../../app/api/baseApi";
 
 export const gameApi = createApi({
     reducerPath: 'gameApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/game' }),
+    baseQuery: baseQueryWithErrorHandling,
     tagTypes: ['SeasonGames', 'RidersEventsBased', 'RiderEvents', 'EventsWithRider'],
     endpoints: (builder) => ({
         fetchGameLevels: builder.query<GameLevelResponse[], void>({
-            query: () => ({ url: 'levels' })
+            query: () => ({ url: 'game/levels' })
         }),
         fetchGameStages: builder.query<GameStageResponse[], void>({
-            query: () => ({ url: 'stages' })
+            query: () => ({ url: 'game/stages' })
         }),
         fetchSeasonGames: builder.query<GameResponse[], string>({
-            query: (seasonId) => ({ url: `seasonGames?seasonId=${seasonId}` }),
+            query: (seasonId) => ({ url: `game/seasonGames?seasonId=${seasonId}` }),
             providesTags: ['SeasonGames']
         }),
         fetchGameEventsWithRiders: builder.query<EventWithRiderResponse[], string>({
-            query: (gameId) => ({ url: `gameEventsWithRider?gameId=${gameId}` }),
+            query: (gameId) => ({ url: `game/gameEventsWithRider?gameId=${gameId}` }),
             providesTags: ['EventsWithRider']
         }),
         //list of riders buit upon their events
         fetchGameEvents: builder.query<EventResponse[], { gameId: string, homeAway: string }>({
-            query: ({ gameId, homeAway }) => ({ url: `gameEvents?gameId=${gameId}&homeAway=${homeAway}` }),
+            query: ({ gameId, homeAway }) => ({ url: `game/gameEvents?gameId=${gameId}&homeAway=${homeAway}` }),
             providesTags: ['RidersEventsBased']
         }),
         //list of game event riders with concatenated result
         fetchGameRiderEvents: builder.query<GameRiderEvents, { gameId: string, homeAway: string }>({
-            query: ({ gameId, homeAway }) => ({ url: `gameRiderEvents?gameId=${gameId}&homeAway=${homeAway}` }),
+            query: ({ gameId, homeAway }) => ({ url: `game/gameRiderEvents?gameId=${gameId}&homeAway=${homeAway}` }),
             providesTags: ['RiderEvents']
         }),
         changeEvents: builder.mutation<DefaultResponse, { oldEventId: string, newEventId: string }>({
             query: ({ oldEventId, newEventId }) => {
-                return { url: `changeEvents?oldEventId=${oldEventId}&newEventId=${newEventId}`, method: 'POST' }
+                return { url: `game/changeEvents?oldEventId=${oldEventId}&newEventId=${newEventId}`, method: 'POST' }
             },
             onQueryStarted: (_, { dispatch }) => {
                 dispatch(gameApi.util.invalidateTags(['RidersEventsBased', 'RiderEvents', 'EventsWithRider']))
@@ -50,7 +50,7 @@ export const gameApi = createApi({
         }),
         calculateBonuses: builder.mutation<DefaultResponse, string>({
             query: (gameId) => {
-                return { url: `calculateBonuses?gameId=${gameId}`, method: 'POST' }
+                return { url: `game/calculateBonuses?gameId=${gameId}`, method: 'POST' }
             },
             onQueryStarted: (_, { dispatch }) => {
                 dispatch(gameApi.util.invalidateTags(['RidersEventsBased', 'RiderEvents', 'EventsWithRider']))
@@ -58,16 +58,24 @@ export const gameApi = createApi({
         }),
         resetEventsToDefault: builder.mutation<DefaultResponse, string>({
             query: (gameId) => {
-                return { url: `resetEventsToDefault?gameId=${gameId}`, method: 'POST' }
+                return { url: `game/resetEventsToDefault?gameId=${gameId}`, method: 'POST' }
             },
             onQueryStarted: (_, { dispatch }) => {
                 dispatch(gameApi.util.invalidateTags(['RidersEventsBased', 'RiderEvents', 'EventsWithRider']))
             }
         }),
+        saveGame: builder.mutation<DefaultResponse, string>({
+            query: (id) => {
+                return { url: `game/saveGame?id=${id}`, method: 'POST' }
+            },
+            onQueryStarted: (_, { dispatch }) => {
+                dispatch(gameApi.util.invalidateTags(['SeasonGames']))
+            }
+        }),
         removeGameRiderEvents: builder.mutation<void, { gameId: string, riderId: string }>({
             query: ({ gameId, riderId }) => {
                 return {
-                    url: `removeGameRiderEvents?gameId=${gameId}&riderId=${riderId}`,
+                    url: `game/removeGameRiderEvents?gameId=${gameId}&riderId=${riderId}`,
                     method: 'DELETE',
                 }
             },
@@ -76,13 +84,13 @@ export const gameApi = createApi({
             }
         }),
         fetchGame: builder.query<GameResponse, string>({
-            query: (id) => ({ url: `?id=${id}` }),
+            query: (id) => ({ url: `game/?id=${id}` }),
             providesTags: ['SeasonGames']
         }),
         addGamesByTeamsId: builder.mutation<DefaultResponse, GamesByTeamsIdRequest>({
             query: (gamesRequest) => {
                 return {
-                    url: 'games',
+                    url: `game/games`,
                     method: 'POST',
                     body: gamesRequest
                 }
@@ -94,7 +102,7 @@ export const gameApi = createApi({
         editGame: builder.mutation<DefaultResponse, GamesEditRequestDto>({
             query: (gameEditRequest) => {
                 return {
-                    url: 'editGame',
+                    url: `game/editGame`,
                     method: 'POST',
                     body: gameEditRequest
                 }
@@ -106,7 +114,7 @@ export const gameApi = createApi({
         addRiderEvents: builder.mutation<number, RiderEventsRequest>({
             query: (riderEventsRequest) => {
                 return {
-                    url: 'riderEvents',
+                    url: 'game/riderEvents',
                     method: 'POST',
                     body: riderEventsRequest
                 }
@@ -121,4 +129,4 @@ export const gameApi = createApi({
 export const { useFetchGameEventsQuery, useChangeEventsMutation, useFetchGameEventsWithRidersQuery, useFetchGameStagesQuery,
     useRemoveGameRiderEventsMutation, useFetchGameRiderEventsQuery, useFetchGameLevelsQuery, useAddGamesByTeamsIdMutation,
     useFetchSeasonGamesQuery, useFetchGameQuery, useAddRiderEventsMutation, useCalculateBonusesMutation,
-    useResetEventsToDefaultMutation, useEditGameMutation } = gameApi;
+    useResetEventsToDefaultMutation, useEditGameMutation, useSaveGameMutation } = gameApi;
