@@ -26,6 +26,11 @@ export default function SeasonPage() {
     setSeasonYearToAdd(event.target.value as string);
   };
 
+  const addNewSeason = () => {
+    console.log("adding season", seasonYearToAdd);
+    createSeason(seasonYearToAdd);
+  };
+
   if (isLoading || !data) return <div>Loading...</div>;
 
   return (
@@ -68,7 +73,8 @@ export default function SeasonPage() {
           </Select>
         </FormControl>
         <Button
-          onClick={() => createSeason(seasonYearToAdd)}
+          //  onClick={() => createSeason(seasonYearToAdd)}
+          onClick={addNewSeason}
           sx={{ width: "150px" }}
           variant="contained"
           disabled={seasonCreating}
