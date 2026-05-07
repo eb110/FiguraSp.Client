@@ -28,10 +28,11 @@ export default function SeasonDetails() {
     useAddGamesByTeamsIdMutation();
   const { data: levels, isLoading: levelsLoading } = useFetchGameLevelsQuery();
 
-  const { data: games, isLoading: gamesLodaing } = useFetchSeasonGamesQuery(
+  const { data: games, isLoading: gamesLoading } = useFetchSeasonGamesQuery(
     seasonId ?? "",
   );
   const [teamsToPair, setTeamsToPair] = useState<string[]>([]);
+  const [revealAddTeams, setRevealAddTeams] = useState(false);
   const [level, setLevel] = useState("");
 
   if (
@@ -39,7 +40,7 @@ export default function SeasonDetails() {
     !teams ||
     levelsLoading ||
     !levels ||
-    gamesLodaing ||
+    gamesLoading ||
     !games
   )
     return <div>Loading...</div>;
@@ -54,6 +55,10 @@ export default function SeasonDetails() {
 
   const handleLevelSelection = (event: SelectChangeEvent) => {
     setLevel(event.target.value as string);
+  };
+
+  const revealTeams = () => {
+    setRevealAddTeams(!revealAddTeams);
   };
 
   const addGames = async () => {
@@ -79,50 +84,77 @@ export default function SeasonDetails() {
     >
       <GameList seasonId={seasonId ?? ""} teams={teams} levels={levels} />
 
-      <Grid
-        container
-        marginLeft={3}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {teams.map((team) => (
-          <Grid size={2} display="flex" key={team.id}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  onChange={handleCheckbox}
-                  value={team.id}
-                  checked={teamsToPair.includes(team.id)}
-                />
-              }
-              label={team.city}
-            />
-          </Grid>
-        ))}
-      </Grid>
-      <Box sx={{ marginTop: 2, minWidth: 120 }}>
-        <FormControl fullWidth>
-          <InputLabel>Level</InputLabel>
-          <Select value={level} label="Level" onChange={handleLevelSelection}>
-            {levels.map((level) => (
-              <MenuItem key={level.id} value={level.gameLevel!}>
-                {level.gameLevel}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
       <Button
-        sx={{ marginTop: 2 }}
+        sx={{ margin: 2 }}
         variant="contained"
-        onClick={addGames}
-        disabled={level.length === 0 || teamsToPair.length < 2 || addingGames}
+        onClick={revealTeams}
+        disabled={!teams}
       >
-        Create Games
+        Reveal Teams
       </Button>
+      {revealAddTeams && (
+        <Box>
+          <Grid
+            container
+            marginLeft={3}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {teams.map((team) => (
+              <Grid size={2} display="flex" key={team.id}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      onChange={handleCheckbox}
+                      value={team.id}
+                      checked={teamsToPair.includes(team.id)}
+                    />
+                  }
+                  label={team.city}
+                />
+              </Grid>
+            ))}
+          </Grid>
+          <Box
+            sx={{
+              marginTop: 2,
+              minWidth: 120,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <FormControl sx={{ width: "20%" }}>
+              <InputLabel>Level</InputLabel>
+              <Select
+                value={level}
+                label="Level"
+                onChange={handleLevelSelection}
+              >
+                {levels.map((level) => (
+                  <MenuItem key={level.id} value={level.gameLevel!}>
+                    {level.gameLevel}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Button
+              sx={{ width: "20%", marginTop: 2 }}
+              variant="contained"
+              onClick={addGames}
+              disabled={
+                level.length === 0 || teamsToPair.length < 2 || addingGames
+              }
+            >
+              Create Games
+            </Button>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }
