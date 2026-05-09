@@ -13,7 +13,7 @@ export default defineConfig({
                 statements: 80,
                 // perFile: true, // Enforce thresholds per file
             },
-            enabled: false,
+            enabled: true,
             include: ['src/**/*.{ts,tsx}'],
             exclude: ['teamResponse.ts']
         },
