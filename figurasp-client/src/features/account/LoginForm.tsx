@@ -26,7 +26,6 @@ export default function LoginForm() {
 
   //custom call to api => async await!
   const onSubmit = async (data: LoginSchema) => {
-    console.log(data);
     await login(data);
   };
 
