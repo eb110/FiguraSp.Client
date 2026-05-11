@@ -5,6 +5,7 @@ import { seasonApi } from "../../features/season/seasonApi";
 import { gameApi } from "../../features/game/gameApi";
 import { riderApi } from "../../features/rider/riderApi";
 import { networkApi } from "../../features/network/networkApi";
+import { userApi } from "../../features/account/userApi";
 
 export const store = configureStore({
     reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
         [gameApi.reducerPath]: gameApi.reducer,
         [riderApi.reducerPath]: riderApi.reducer,
         [networkApi.reducerPath]: networkApi.reducer,
+        [userApi.reducerPath]: userApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
@@ -21,6 +23,7 @@ export const store = configureStore({
             .concat(gameApi.middleware)
             .concat(riderApi.middleware)
             .concat(networkApi.middleware)
+            .concat(userApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>
