@@ -1,8 +1,39 @@
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { LockOutline } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { loginSchema, type LoginSchema } from "../../tools/schemas/loginSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLoginUserMutation } from "./userApi";
 
 export default function LoginForm() {
+  //      a3@op.pl
+  //      Pa$$w0rd!
+
+  //redux login endpoint => consumes LoginSchema -> map to Api requested object
+  const [login, { isLoading: loginLoading }] = useLoginUserMutation();
+
+  //zod validation triggered by onTouch
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginSchema>({
+    mode: "onTouched",
+    //login form schema -> required by zod to validate the form
+    resolver: zodResolver(loginSchema),
+  });
+
+  //custom call to api => async await!
+  const onSubmit = async (data: LoginSchema) => {
+    console.log(data);
+    await login(data);
+  };
+
+  if (loginLoading || !login) {
+    return <Box>Loading...</Box>;
+  }
+
   return (
     <Container maxWidth="sm" sx={{ borderRadius: 3 }}>
       <Box
@@ -15,16 +46,30 @@ export default function LoginForm() {
         <Typography variant="h5">Sign In</Typography>
         <Box
           component="form"
+          onSubmit={handleSubmit(onSubmit)}
           width="100%"
           display="flex"
           flexDirection="column"
           gap={3}
           marginY={3}
         >
-          <TextField fullWidth label="Email" autoFocus />
-          <TextField fullWidth label="Password" type="password" />
-          <TextField fullWidth label="Username" type="text" />
-          <Button variant="outlined" type="submit">
+          <TextField
+            fullWidth
+            label="Email"
+            autoFocus
+            {...register("email", { required: "email is missing" })}
+            error={errors.email ? true : false}
+            helperText={errors.email?.message}
+          />
+          <TextField
+            fullWidth
+            label="Password"
+            type="password"
+            {...register("password", { required: "password is missing" })}
+            error={errors.password ? true : false}
+            helperText={errors.password?.message}
+          />
+          <Button disabled={loginLoading} variant="outlined" type="submit">
             Sign In
           </Button>
           <Typography sx={{ textAlign: "center" }}>

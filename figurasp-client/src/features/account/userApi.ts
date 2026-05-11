@@ -2,7 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import type { UserResponseDto } from "../../types/response/userResponseDto";
 import type { UserRegisterRequestDto } from "../../types/request/userRegisterRequestDto";
-import type { UserLoginRequestDto } from "../../types/request/userLoginRequestDto";
+import type { LoginSchema } from "../../tools/schemas/loginSchema";
 
 export const userApi = createApi({
     reducerPath: 'userApi',
@@ -18,7 +18,9 @@ export const userApi = createApi({
                 }
             },
         }),
-        loginUser: builder.mutation<UserResponseDto, UserLoginRequestDto>({
+        //login schema as a request as it provides direct mapping to api requested object
+        //and handles validation by zod feature
+        loginUser: builder.mutation<UserResponseDto, LoginSchema>({
             query: (user) => {
                 return {
                     url: 'login',
