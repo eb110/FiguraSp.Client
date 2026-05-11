@@ -10,6 +10,7 @@ import SeasonDetails from "../../features/season/SeasonDetails";
 import GamePage from "../../features/game/GamePage";
 import NotFound from "../../features/home/NotFound";
 import LoginForm from "../../features/account/LoginForm";
+import RegisterForm from "../../features/account/RegisterForm";
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "riders/:id", element: <RiderDetails /> },
       { path: "teams", element: <TeamPage /> },
       { path: "login", element: <LoginForm /> },
+      { path: "register", element: <RegisterForm /> },
       { path: "teams/:id", element: <TeamDetails /> },
       { path: "games/:id/:year", element: <GamePage /> },
       { path: "not-found", element: <NotFound /> },

@@ -1,15 +1,15 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import type { UserResponseDto } from "../../types/response/userResponseDto";
-import type { UserRegisterRequestDto } from "../../types/request/userRegisterRequestDto";
 import type { LoginSchema } from "../../tools/schemas/loginSchema";
+import type { RegisterSchema } from "../../tools/schemas/registerSchema";
 
 export const userApi = createApi({
     reducerPath: 'userApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/user' }),
     tagTypes: [],
     endpoints: (builder) => ({
-        registerUser: builder.mutation<UserResponseDto, UserRegisterRequestDto>({
+        registerUser: builder.mutation<UserResponseDto, RegisterSchema>({
             query: (newUser) => {
                 return {
                     url: 'register',
