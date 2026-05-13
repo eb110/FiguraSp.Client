@@ -8,7 +8,22 @@ const customBaseQuery = fetchBaseQuery({
 
 export const baseQueryWithErrorHandling = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: object) => {
     //start loading
-    const result = await customBaseQuery(args, api, extraOptions);
+    let result = await customBaseQuery(args, api, extraOptions);
+    console.log('result: ', result)
+    //authorization token refresh
+    if (result.error && result.error.status === 401) {
+        console.log('refresh of the token needed')
+        // try to get a new token
+        const refreshResult = await customBaseQuery('/user/refreshToken', api, extraOptions)
+        console.log('refreshedTokenContent: ', refreshResult)
+        if (refreshResult.data) {
+            // retry the initial query
+            result = await customBaseQuery(args, api, extraOptions)
+        } else {
+            console.log('token refresh error - expired or unvalid')
+            //   api.dispatch(loggedOut())
+        }
+    }
 
     //stop loading
     if (result.error) {

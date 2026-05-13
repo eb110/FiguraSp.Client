@@ -5,13 +5,15 @@ import { loginSchema, type LoginSchema } from "../../tools/schemas/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginUserMutation } from "./userApi";
+import { useState } from "react";
 
 export default function LoginForm() {
-  //      a3@op.pl
+  //      a2@op.pl
   //      Pa$$w0rd!
 
   //redux login endpoint => consumes LoginSchema -> map to Api requested object
   const [login, { isLoading: loginLoading }] = useLoginUserMutation();
+  const [token, setToken] = useState<string>("");
 
   //zod validation triggered by onTouch
   const {
@@ -26,7 +28,10 @@ export default function LoginForm() {
 
   //custom call to api => async await!
   const onSubmit = async (data: LoginSchema) => {
-    await login(data);
+    const response = await login(data);
+    console.log(response);
+    setToken(response.data!.accessToken);
+    console.log("token: ", token);
   };
 
   if (loginLoading || !login) {

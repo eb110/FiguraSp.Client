@@ -28,8 +28,12 @@ export const userApi = createApi({
                     body: user
                 }
             },
-        })
+        }),
+        refreshToken: builder.query<UserResponseDto, void>({
+            query: () => ({ url: 'refreshToken?useCookies=true', credentials: 'include' })
+        }),
     })
-});
+})
 
-export const { useRegisterUserMutation, useLoginUserMutation } = userApi;
+
+export const { useRegisterUserMutation, useLoginUserMutation, useRefreshTokenQuery } = userApi;
